@@ -1,6 +1,6 @@
 {
   "name": "fifo-calculator",
-  "version": "0.0.1",
+  "version": "0.1.0",
   "description": "FIFO Calculation for Cost of Goods Sold",
   "main": "index.js",
   "author": "Ezra Lim",
