@@ -1,0 +1,18 @@
+{
+  "name": "fifo-calculator",
+  "version": "0.0.1",
+  "description": "FIFO Calculation for Cost of Goods Sold",
+  "main": "index.js",
+  "author": "Ezra Lim",
+  "license": "MIT",
+  "repository": "https://github.com/milarze/fifo-calculator",
+  "devDependencies": {
+    "@babel/core": "^7.14.6",
+    "@babel/preset-env": "^7.14.7",
+    "babel-jest": "^27.0.6",
+    "jest": "^27.0.6"
+  },
+  "scripts": {
+    "test": "jest"
+  }
+}
