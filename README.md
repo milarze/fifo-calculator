@@ -1,4 +1,5 @@
 # fifo-calculator
+![Main](https://github.com/milarze/fifo-calculator/actions/workflows/node.js.yml/badge.svg)
 FIFO Calculation for Cost of Goods Sold
 
 ### How To Use
