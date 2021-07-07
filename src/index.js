@@ -64,7 +64,11 @@ export default function fifoCalculator(stockSeries = []) {
       delete stockMovement.costPerItem;
     }
 
-    stockMovement.quantityOnHand = stockCostBuckets.reduce((total, stockMovement) => total + stockMovement.quantity, 0)
+    stockMovement.quantityOnHand = stockCostBuckets.reduce((total, stockCostBucket) => total + stockCostBucket.quantity, 0)
+    stockMovement.valueOnHand = stockCostBuckets.reduce((total, stockCostBucket) => {
+      if (stockCostBucket.quantity <= 0) return total;
+      return total + stockCostBucket.quantity * stockCostBucket.costPerItem
+    }, 0)
   })
   return stockSeries;
 }
