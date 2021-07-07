@@ -6,22 +6,36 @@ function addStock({ quantity, costPerItem }) {
   stockCostBuckets.push({ quantity, costPerItem });
 }
 
-function removeStock(quantity) {
+function getStockDecreaseCosts(quantity) {
+  quantity = Math.abs(quantity)
   let costs = [];
   if (stockCostBuckets[0].quantity > quantity) {
     stockCostBuckets[0].quantity -= quantity;
-    costs.push(stockCostBuckets[0].costPerItem);
+    costs.push({
+      cost: stockCostBuckets[0].costPerItem,
+      quantity: quantity,
+    });
   } else if (stockCostBuckets[0].quantity === quantity) {
-    costs.push(stockCostBuckets[0].costPerItem);
+    costs.push({
+      cost: stockCostBuckets[0].costPerItem,
+      quantity: quantity,
+    });
     stockCostBuckets.shift();
   } else {
     let remainingQuantity = quantity - stockCostBuckets[0].quantity;
-    costs.push(stockCostBuckets[0].costPerItem);
+    costs.push({
+      cost: stockCostBuckets[0].costPerItem,
+      quantity: stockCostBuckets[0].quantity,
+    });
     stockCostBuckets.shift();
-    costs.concat(removeStock(remainingQuantity));
+    let subCosts = getStockDecreaseCosts(remainingQuantity);
+    costs.push(subCosts);
   }
+  return costs.flat();
+}
 
-  return costs;
+function isNumeric(n) {
+  return !Number.isNaN(n) && Number.isFinite(n);
 }
 
 function isValidInput(stockMovement) {
@@ -29,7 +43,12 @@ function isValidInput(stockMovement) {
     isNumeric(stockMovement.costPerItem);
 }
 
+function deepCopy(object) {
+  return JSON.parse(JSON.stringify(object));
+}
+
 export default function fifoCalculator(stockSeries = []) {
+  stockSeries = deepCopy(stockSeries)
   stockSeries.forEach((stockMovement) => {
     if (!isValidInput(stockMovement)) {
       throw new InputError('Invalid input', stockMovement);
@@ -40,7 +59,12 @@ export default function fifoCalculator(stockSeries = []) {
     }
 
     if (stockMovement.quantity < 0) {
-      removeStock(stockMovement.quantity);
+      let costs = getStockDecreaseCosts(stockMovement.quantity);
+      stockMovement.costs = costs;
+      delete stockMovement.costPerItem;
     }
+
+    stockMovement.quantityOnHand = stockCostBuckets.reduce((total, stockMovement) => total + stockMovement.quantity, 0)
   })
+  return stockSeries;
 }
