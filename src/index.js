@@ -1,12 +1,10 @@
 import InputError from './errors/input-error.js';
 
-let stockCostBuckets = [];
-
-function addStock({ quantity, costPerItem }) {
+function addStock({ quantity, costPerItem }, stockCostBuckets) {
   stockCostBuckets.push({ quantity, costPerItem });
 }
 
-function getStockDecreaseCosts(quantity) {
+function getStockDecreaseCosts(quantity, stockCostBuckets) {
   quantity = Math.abs(quantity)
   let costs = [];
   if (stockCostBuckets[0].quantity > quantity) {
@@ -28,7 +26,7 @@ function getStockDecreaseCosts(quantity) {
       quantity: stockCostBuckets[0].quantity,
     });
     stockCostBuckets.shift();
-    let subCosts = getStockDecreaseCosts(remainingQuantity);
+    let subCosts = getStockDecreaseCosts(remainingQuantity, stockCostBuckets);
     costs.push(subCosts);
   }
   return costs.flat();
@@ -48,6 +46,7 @@ function deepCopy(object) {
 }
 
 export default function fifoCalculator(stockSeries = []) {
+  let stockCostBuckets = [];
   stockSeries = deepCopy(stockSeries)
   stockSeries.forEach((stockMovement) => {
     if (!isValidInput(stockMovement)) {
@@ -55,11 +54,11 @@ export default function fifoCalculator(stockSeries = []) {
     }
 
     if (stockMovement.quantity > 0) {
-      addStock(stockMovement);
+      addStock(stockMovement, stockCostBuckets);
     }
 
     if (stockMovement.quantity < 0) {
-      let costs = getStockDecreaseCosts(stockMovement.quantity);
+      let costs = getStockDecreaseCosts(stockMovement.quantity, stockCostBuckets);
       stockMovement.costs = costs;
       delete stockMovement.costPerItem;
     }
